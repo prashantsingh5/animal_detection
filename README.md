@@ -77,6 +77,9 @@ http://localhost:5000
 4. Use the queue system to process multiple files
 5. View results with color-coded classifications
 
+![WhatsApp Image 2025-01-16 at 16 23 52_a84f9391](https://github.com/user-attachments/assets/7aa05661-8d25-49fb-8e12-838c2e5d0724)
+
+
 ## 🎯 Supported Animals
 
 | Category | Animals |
