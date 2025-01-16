@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animals Classification</title>
+    <style>
+        /* All existing styles remain the same */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f8fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        #train-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        #train-button:hover {
+            background-color: #218838;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .left-column, .right-column {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .upload-section, .result-section, .animal-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #drop-zone {
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #drop-zone:hover {
+            background-color: #e6f7ff;
+        }
+
+        #uploaded-image, #uploaded-video {
+            max-width: 100%;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #uploaded-video {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .detect-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .detect-button:hover {
+            background-color: #0056b3;
+        }
+
+        .animal-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .animal-option {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .animal-option.active {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+            transform: scale(1.1);
+        }
+
+        .animal-option:hover {
+            background-color: #e2e6ea;
+        }
+
+        .animal-option.active {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+            transform: scale(1.1);
+        }
+
+        .file-select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .animal-info {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+            
+        .animal-info h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            color: #007bff;
+        }
+            
+        .animal-info p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }    
+            
+        /* Adding new styles for queue system */
+        .queue-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .queue-item.processing {
+            background-color: #e2f0ff;
+        }
+
+        .queue-item.completed {
+            background-color: #e2ffe2;
+        }
+
+        .remove-item {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .queue-controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .process-queue {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .clear-queue {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Rest of your existing styles */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Animals Classification</h1>
+        <button id="train-button" onclick="openTrainingDoc()" style="position: absolute; top: 20px; right: 20px; background-color: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 16px; border-radius: 5px;">Train</button>
+
+    </header>
+    <div class="container">
+        <div class="left-column">
+            <section class="upload-section">
+                <h2>Upload Files</h2>
+                <select class="file-select" onchange="handleFileTypeChange(this.value)">
+                    <option value="">Select file type</option>
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                </select>
+                <div id="drop-zone" onclick="document.getElementById('file-upload').click()">
+                    <p>Drag and drop files here, or click to upload</p>
+                    <input type="file" id="file-upload" hidden multiple onchange="addToQueue(event)">
+                </div>
+                <img id="uploaded-image" alt="Uploaded Image Preview">
+                <video id="uploaded-video" controls>
+                    <source id="video-source" src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </section>
+
+            <section class="queue-section">
+                <h2>Detection Queue</h2>
+                <div id="queue-list">
+                    <!-- Queue items will be added here dynamically -->
+                </div>
+                <div class="queue-controls">
+                    <button class="process-queue" onclick="processQueue()">Process Queue</button>
+                    <button class="clear-queue" onclick="clearQueue()">Clear Queue</button>
+                </div>
+            </section>
+
+            <section class="animal-section">
+                <h2>Animal Type</h2>
+                <div class="animal-options">
+                    <div class="animal-option" id="pet-animal">Pet Animal</div>
+                    <div class="animal-option" id="wild-animal">Wild Animal</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        let fileQueue = [];
+        let isProcessing = false;
+        let lastProcessedFile = null;
+
+        function addToQueue(event) {
+            const files = event.target.files;
+            const fileType = document.querySelector('.file-select').value;
+            
+            if (!fileType) {
+                alert('Please select a file type first');
+                return;
+            }
+
+            for (let file of files) {
+                if ((fileType === 'image' && file.type.startsWith('image/')) ||
+                    (fileType === 'video' && file.type.startsWith('video/'))) {
+                    fileQueue.push({
+                        file: file,
+                        status: 'pending',
+                        type: fileType
+                    });
+                }
+            }
+            updateQueueDisplay();
+            // Show file preview without highlighting animal type
+            previewFile(event);
+        }
+
+        function updateQueueDisplay() {
+            const queueList = document.getElementById('queue-list');
+            queueList.innerHTML = '';
+            
+            fileQueue.forEach((item, index) => {
+                const queueItem = document.createElement('div');
+                queueItem.className = `queue-item ${item.status}`;
+                queueItem.innerHTML = `
+                    <span>${item.file.name} (${item.status})</span>
+                    <button class="remove-item" onclick="removeFromQueue(${index})">Remove</button>
+                `;
+                queueList.appendChild(queueItem);
+            });
+        }
+
+        function removeFromQueue(index) {
+            fileQueue.splice(index, 1);
+            updateQueueDisplay();
+        }
+
+        function clearQueue() {
+            fileQueue = [];
+            updateQueueDisplay();
+            resetAnimalOptions(); // Reset animal options when queue is cleared
+        }
+
+        async function processQueue() {
+            if (isProcessing || fileQueue.length === 0) return;
+            isProcessing = true;
+
+            for (let item of fileQueue) {
+                if (item.status === 'pending') {
+                    item.status = 'processing';
+                    updateQueueDisplay();
+                    resetAnimalOptions(); // Reset animal options before processing
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', item.file);
+                        formData.append('type', item.type);
+
+                        const response = await fetch('/detect', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+
+                        // Update the preview with processed result
+                        if (item.type === 'image') {
+                            document.getElementById('uploaded-image').src = data.processed_image;
+                        } else if (item.type === 'video') {
+                            const videoElement = document.getElementById('uploaded-video');
+                            videoElement.src = data.processed_video;
+                            videoElement.load();
+                        }
+
+                        // Only highlight animal type after successful processing
+                        if (data.dominant_type === 'pet') {
+                            document.getElementById('pet-animal').classList.add('active');
+                        } else if (data.dominant_type === 'wild') {
+                            document.getElementById('wild-animal').classList.add('active');
+                        }
+
+                        item.status = 'completed';
+                    } catch (error) {
+                        console.error('Error processing file:', error);
+                        item.status = 'error';
+                    }
+
+                    updateQueueDisplay();
+                }
+            }
+
+            isProcessing = false;
+        }
+
+        function handleFileTypeChange(fileType) {
+            const fileInput = document.getElementById('file-upload');
+            if (fileType === 'image') {
+                fileInput.accept = 'image/*';
+            } else if (fileType === 'video') {
+                fileInput.accept = 'video/*';
+            } else {
+                fileInput.accept = '';
+            }
+            document.getElementById('uploaded-image').style.display = 'none';
+            document.getElementById('uploaded-video').style.display = 'none';
+            resetAnimalOptions(); // Reset animal options when file type changes
+        }
+
+        function previewFile(event) {
+            const file = event.target.files[0];
+            const imgPreview = document.getElementById('uploaded-image');
+            const videoPreview = document.getElementById('uploaded-video');
+            const videoSource = document.getElementById('video-source');
+            const fileType = document.querySelector('.file-select').value;
+
+            resetAnimalOptions(); // Reset animal options when new file is previewed
+
+            if (fileType === 'image' && file.type.startsWith('image/')) {
+                imgPreview.src = URL.createObjectURL(file);
+                imgPreview.style.display = 'block';
+                videoPreview.style.display = 'none';
+            } else if (fileType === 'video' && file.type.startsWith('video/')) {
+                videoSource.src = URL.createObjectURL(file);
+                videoPreview.style.display = 'block';
+                imgPreview.style.display = 'none';
+                videoPreview.load();
+            }
+        }
+
+        function resetAnimalOptions() {
+            document.querySelectorAll('.animal-option').forEach(el => {
+                el.classList.remove('active');
+            });
+        }
+
+        function openTrainingDoc() {
+            // Create a new window for the training documentation
+            const trainingWindow = window.open('', 'Training Documentation', 'width=800,height=600,scrollbars=yes');
+            
+            // Add the training documentation content
+            trainingWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Custom Model Training Guide</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                            margin: 20px;
+                            color: #333;
+                        }
+                        h1, h2 {
+                            color: #007bff;
+                        }
+                        .step {
+                            margin-bottom: 30px;
+                            padding: 20px;
+                            background: #f8f9fa;
+                            border-radius: 5px;
+                        }
+                        code {
+                            background: #e9ecef;
+                            padding: 2px 5px;
+                            border-radius: 3px;
+                        }
+                        pre {
+                            background: #e9ecef;
+                            padding: 15px;
+                            border-radius: 5px;
+                            overflow-x: auto;
+                        }
+                        .note {
+                            background: #fff3cd;
+                            padding: 15px;
+                            border-left: 4px solid #ffc107;
+                            margin: 10px 0;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Training Custom Animal Detection Model</h1>
+                    
+                    <div class="step">
+                        <h2>Step 1: Dataset Preparation</h2>
+                        <ul>
+                            <li>Collect a diverse set of images/videos containing your target animals</li>
+                            <li>Recommended minimum: 100 images per class</li>
+                            <li>Include variations in:
+                                <ul>
+                                    <li>Lighting conditions</li>
+                                    <li>Angles and poses</li>
+                                    <li>Backgrounds</li>
+                                    <li>Distances</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+        
+                    <div class="step">
+                        <h2>Step 2: CVAT Annotation</h2>
+                        <ol>
+                            <li>Create account on <a href="https://www.cvat.ai" target="_blank">CVAT.ai</a></li>
+                            <li>Create new project:
+                                <ul>
+                                    <li>Click "Create New Project"</li>
+                                    <li>Name your project</li>
+                                    <li>Select "Object Detection" as task type</li>
+                                </ul>
+                            </li>
+                            <li>Create labels for each animal class</li>
+                            <li>Upload your images/videos</li>
+                            <li>Create bounding boxes:
+                                <ul>
+                                    <li>Press N to create a new box</li>
+                                    <li>Draw around each animal</li>
+                                    <li>Select appropriate label</li>
+                                    <li>Ensure tight fitting boxes</li>
+                                </ul>
+                            </li>
+                            <li>Export annotations in YOLO format</li>
+                        </ol>
+
+                        <div class="annotation-image" style="margin: 20px 0; text-align: center;">
+                            <img src="{{ url_for('static', filename='images/dog.png') }}" alt="CVAT Annotation Example" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                            <p style="margin-top: 10px; color: #666; font-style: italic;">Example of CVAT annotation interface with bounding boxes</p>
+                        </div>
+
+                        <div class="note">
+                            Note: Ensure consistent annotation quality across all images
+                        </div>
+                    </div>
+        
+                    <div class="step">
+                        <h2>Step 3: Training Custom Model</h2>
+                        <p>Using YOLOv8:</p>
+                        <pre>
+        # 1. Install requirements
+        pip install ultralytics
+        
+        # 2. Prepare dataset structure
+        dataset/
+        ├── train/
+        │   ├── images/
+        │   └── labels/
+        ├── val/
+        │   ├── images/
+        │   └── labels/
+        └── data.yaml
+        
+        # 3. Create data.yaml file:
+        names: ['animal1', 'animal2']  # Your class names
+        nc: 2  # Number of classes
+        train: train/images
+        val: val/images
+        
+        # 4. Train model
+        from ultralytics import YOLO
+        
+        # Load YOLOv8 model
+        model = YOLO('yolov8n.yaml')
+        
+        # Train model
+        model.train(
+            data='path/to/data.yaml',
+            epochs=100,
+            imgsz=640,
+            batch=16,
+            name='custom_model'
+        )</pre>
+                    </div>
+        
+                    <div class="step">
+                        <h2>Step 4: Using Custom Model</h2>
+                        <p>Replace the model loading in the Flask application:</p>
+                        <pre>
+        def get_model():
+            """Get or initialize custom YOLOv8 model"""
+            global model
+            if model is None:
+                model = YOLO('path/to/custom_model.pt')
+            return model</pre>
+                        <div class="note">
+                            Important: Update SUPPORTED_ANIMALS dictionary with your custom classes
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            trainingWindow.document.close();
+        }
+    </script>
+</body>
+</html>
