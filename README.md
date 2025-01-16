@@ -141,4 +141,4 @@ SUPPORTED_ANIMALS = {
 ## 📧 Contact
 
 Your Name - [prashantsingha96@gmail.com](mailto:prashantsingha96@gmail.com)
-Project Link: [https://github.com/yourusername/animal-detection](https://github.com/yourusername/animal-detection)
+Project Link: [https://github.com/yourusername/animal-detection](https://github.com/prashantsingh5/animal_detection.git)
