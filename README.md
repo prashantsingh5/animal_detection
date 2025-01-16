@@ -1,5 +1,3 @@
-# animal_detection
-
 # Animal Detection and Classification System 🐾
 
 A web-based application for real-time animal detection and classification using YOLOv8 and Flask. The system can process both images and videos, distinguishing between pet animals, wild animals, and farm animals.
