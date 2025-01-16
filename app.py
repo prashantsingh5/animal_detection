@@ -184,7 +184,8 @@ def detect():
             return jsonify({
                 'detections': detections,
                 'dominant_type': detected_type,
-                'processed_image': f'data:image/jpeg;base64,{img_base64}'
+                'processed_image': f'data:image/jpeg;base64,{img_base64}',
+                'alert_required': detected_type == 'wild'  # Add this line
             })
             
         elif file_type == 'video':
@@ -207,7 +208,8 @@ def detect():
                 return jsonify({
                     'detections': detections_summary,
                     'dominant_type': detected_type,
-                    'processed_video': f'data:video/mp4;base64,{video_base64}'
+                    'processed_video': f'data:video/mp4;base64,{video_base64}',
+                    'alert_required': detected_type == 'wild'
                 })
                 
             except Exception as e:
